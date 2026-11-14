@@ -473,19 +473,19 @@
 </footer>
 
 <script>
-  const weddingDate = new Date('2027-02-20T18:00:00-03:00').getTime();
+  // Cuenta días de calendario según la fecha actual en Chile (no horas)
+  const weddingDay = Date.UTC(2027, 1, 20);
   function updateCountdown(){
-    const now = Date.now();
-    const diff = weddingDate - now;
-    if(diff <= 0){
-      document.getElementById('cd-days').textContent = '0';
-      return;
-    }
-    const days = Math.ceil(diff / (1000*60*60*24));
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Santiago', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(new Date());
+    const get = t => Number(parts.find(p => p.type === t).value);
+    const today = Date.UTC(get('year'), get('month') - 1, get('day'));
+    const days = Math.max(0, Math.round((weddingDay - today) / 86400000));
     document.getElementById('cd-days').textContent = days;
   }
   updateCountdown();
-  setInterval(updateCountdown, 3600000);
+  setInterval(updateCountdown, 60000);
 
   // Fade-in reveal: each section appears with a soft fade/rise as it
   // scrolls into view, so the page feels like it's revealing itself
